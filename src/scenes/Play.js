@@ -131,6 +131,24 @@ class Play extends Phaser.Scene
 
         //Add key bindings for language selection
         this.createKeyBindings();
+
+
+        //MOBILE CONTROLS / SETUPS
+        this.add.text(10, 10, 'Swipe or tap to move', { fontSize: '16px', fill: '#ffffff' });
+
+        // Touch controls for movement
+        this.input.on('pointerdown', (pointer) => {
+            const x = pointer.x;
+            const y = pointer.y;
+    
+            if (x < this.cameras.main.centerX) {
+                // Move left
+                this.movePlayerLeft();
+            } else if (x > this.cameras.main.centerX) {
+                // Move right
+                this.movePlayerRight();
+            }
+        });
         
     }
 
