@@ -60,7 +60,7 @@ class Play extends Phaser.Scene
         // Access translations and set default language
         this.translations = this.cache.json.get('translations');
         this.selectedLanguage = 'en'; // Default language
-
+    
         //Movement directions and plant/reap
         this.cursors = this.input.keyboard.addKeys({
             'up': Phaser.Input.Keyboard.KeyCodes.W,
@@ -71,11 +71,11 @@ class Play extends Phaser.Scene
             'reap': Phaser.Input.Keyboard.KeyCodes.F,
             'incrementTime': Phaser.Input.Keyboard.KeyCodes.T
         });
-
-        //Add map to scene
+    
+        // Add map to scene
         this.map = this.make.tilemap({ key: 'gameMap' });
-
-        //Add tilesets to be used in layers
+    
+        // Add tilesets to be used in layers
         const tileset1 = this.map.addTilesetImage('farming_fishing', 'tileset1');
         const tileset2 = this.map.addTilesetImage('fence_alt', 'tileset2');
         const tileset5 = this.map.addTilesetImage('plowed_soil', 'tileset5');
@@ -83,140 +83,146 @@ class Play extends Phaser.Scene
         const tileset8 = this.map.addTilesetImage('sand', 'tileset8');
         const tileset9 = this.map.addTilesetImage('sandwater', 'tileset9');
         const tileset11 = this.map.addTilesetImage('tileset_preview', 'tileset11');
-
-        //Define each tile layer and handle collision
+    
+        // Define each tile layer and handle collision
         const tileLayer1 = this.map.createLayer('Tile Layer 1', [tileset11, tileset5], 0, 0);
         const tileLayer2 = this.map.createLayer('Tile Layer 2', [tileset8], 0, 0);
         const tileLayer4 = this.map.createLayer('Tile Layer 4', [tileset7, tileset11], 0, 0);
-
+    
         this.farmingLayer = this.map.createLayer('Farming Layer', tileset5, 0, 0);
-
+    
         const collisionLayer = this.map.createLayer('Collision Layer 1', [tileset1, tileset11, tileset2, tileset9], 0, 0);
         const collisionLayer2 = this.map.createLayer('Collision Layer 2', [tileset1, tileset11, tileset2, tileset7], 0, 0);
-
-        if (collisionLayer && collisionLayer2)
-        {
+    
+        if (collisionLayer && collisionLayer2) {
             collisionLayer.setCollisionByExclusion([-1]);
             collisionLayer2.setCollisionByExclusion([-1]);
         }
-
-        //Add player to scene and allow player collision and player camera movement
+    
+        // Add player to scene and allow player collision and camera movement
         this.player = this.physics.add.sprite(1200, 1600, 'player', 0);
         this.player.body.setCollideWorldBounds(true);
         this.player.setScale(1);
-
+    
         this.cameras.main.startFollow(this.player, true);
-
+    
         this.physics.add.collider(this.player, collisionLayer);
         this.physics.add.collider(this.player, collisionLayer2);
         this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-
+    
         this.infoText = this.add.text(this.cameras.main.worldView.centerX, this.cameras.main.worldView.centerY - 250, `Time: 00:00`, {
             fontSize: '50px',
             fill: '#ffffff'
         }).setOrigin(0.5).setScrollFactor(0);
-
+    
         this.initTilledSoilData();
         this.drawGrid();
-
-        //Load the game state upon refresh 
+    
+        // Load the game state upon refresh 
         const savedState = localStorage.getItem('gameState');
-
-        
-        if (savedState) 
-        {
+    
+        if (savedState) {
             const savedData = new Uint8Array(JSON.parse(savedState));
             this.loadGameState(savedData);
         }
-
-        //Add key bindings for language selection
+    
+        // Add key bindings for language selection
         this.createKeyBindings();
-
-
-          // Add touch zones
-    const touchZones = {
-        up: this.add.zone(width / 2, height / 4, width, height / 4).setOrigin(0.5),
-        down: this.add.zone(width / 2, (3 * height) / 4, width, height / 4).setOrigin(0.5),
-        left: this.add.zone(width / 4, height / 2, width / 4, height).setOrigin(0.5),
-        right: this.add.zone((3 * width) / 4, height / 2, width / 4, height).setOrigin(0.5),
-        plant: this.add.zone(width - 100, height - 150, 100, 100).setOrigin(0.5),
-        reap: this.add.zone(width - 100, height - 50, 100, 100).setOrigin(0.5)
-    };
-
-    // Set zone interactivity and event listeners
-    for (const key in touchZones) {
-        touchZones[key].setInteractive();
-
-        touchZones[key].on('pointerdown', () => {
-            this.cursors[key].isDown = true;
-        });
-
-        touchZones[key].on('pointerup', () => {
-            this.cursors[key].isDown = false;
-        });
+    
+        // Set up touch zones for mobile controls (virtual buttons)
+        const width = this.sys.game.config.width;
+        const height = this.sys.game.config.height;
+    
+        const touchZones = {
+            up: this.add.zone(width / 2, height / 4, width, height / 4).setOrigin(0.5),
+            down: this.add.zone(width / 2, (3 * height) / 4, width, height / 4).setOrigin(0.5),
+            left: this.add.zone(width / 4, height / 2, width / 4, height).setOrigin(0.5),
+            right: this.add.zone((3 * width) / 4, height / 2, width / 4, height).setOrigin(0.5),
+            plant: this.add.zone(width - 100, height - 150, 100, 100).setOrigin(0.5),
+            reap: this.add.zone(width - 100, height - 50, 100, 100).setOrigin(0.5)
+        };
+    
+        // Set zone interactivity and event listeners
+        for (const key in touchZones) {
+            touchZones[key].setInteractive();
+    
+            touchZones[key].on('pointerdown', () => {
+                this.cursors[key].isDown = true;
+            });
+    
+            touchZones[key].on('pointerup', () => {
+                this.cursors[key].isDown = false;
+            });
+        }
+    
+        // Optional: Add visuals for touch zones (for debugging or player guidance)
+        this.add.rectangle(width / 2, height / 4, width, height / 4, 0x00ff00, 0.3); // Up
+        this.add.rectangle(width / 2, (3 * height) / 4, width, height / 4, 0xff0000, 0.3); // Down
+        this.add.rectangle(width / 4, height / 2, width / 4, height, 0x0000ff, 0.3); // Left
+        this.add.rectangle((3 * width) / 4, height / 2, width / 4, height, 0xffff00, 0.3); // Right
+        this.add.rectangle(width - 100, height - 150, 100, 100, 0x00ffff, 0.5).setOrigin(0.5); // Plant
+        this.add.rectangle(width - 100, height - 50, 100, 100, 0xff00ff, 0.5).setOrigin(0.5); // Reap
     }
+    
 
-    // Optional: Add visuals for touch zones (for debugging or player guidance)
-    this.add.rectangle(width / 2, height / 4, width, height / 4, 0x00ff00, 0.3); // Up
-    this.add.rectangle(width / 2, (3 * height) / 4, width, height / 4, 0xff0000, 0.3); // Down
-    this.add.rectangle(width / 4, height / 2, width / 4, height, 0x0000ff, 0.3); // Left
-    this.add.rectangle((3 * width) / 4, height / 2, width / 4, height, 0xffff00, 0.3); // Right
-    this.add.rectangle(width - 100, height - 150, 100, 100, 0x00ffff, 0.5).setOrigin(0.5); // Plant
-    this.add.rectangle(width - 100, height - 50, 100, 100, 0xff00ff, 0.5).setOrigin(0.5); // Reap
-}
-
-        
-        
-    }
-
-    update() 
-    {
+    update() {
         this.direction = new Phaser.Math.Vector2(0);
-
-        if (this.cursors.left.isDown) {
+    
+        // Check for movement input (keyboard or touch)
+        if (this.cursors.left.isDown || this.cursors.left.isDown === true) {
             this.direction.x = -1;
-        } else if (this.cursors.right.isDown) {
+        } else if (this.cursors.right.isDown || this.cursors.right.isDown === true) {
             this.direction.x = 1;
         }
-
-        if (this.cursors.up.isDown) {
+    
+        if (this.cursors.up.isDown || this.cursors.up.isDown === true) {
             this.direction.y = -1;
-        } else if (this.cursors.down.isDown) {
+        } else if (this.cursors.down.isDown || this.cursors.down.isDown === true) {
             this.direction.y = 1;
         }
-
+    
         this.direction.normalize();
         this.player.setVelocity(this.VEL * this.direction.x, this.VEL * this.direction.y);
-
+    
         this.handlePlantingAndReaping();
-
+    
         const numDPlants = this.countPlantsOfType('plant1d') + this.countPlantsOfType('plant2d') + this.countPlantsOfType('plant3d');
         if (numDPlants >= 5) {
             this.displayWinMessage();
         }
-
+    
         if (this.cursors.incrementTime.isDown && this.lastTimeIncrement <= 0) {
             this.timeElapsed += 1;
             this.updateTimeDisplay();
             this.lastTimeIncrement = this.timeInterval;
-
+    
             for (const key in this.tilledSoilData) {
                 const tileData = this.tilledSoilData[key];
                 tileData.sunLevel += Math.floor(Math.random() * 10) + 1;
                 tileData.waterLevel += Math.floor(Math.random() * 2) + 1;
-
+    
                 const [tileX, tileY] = key.split(',').map(Number);
                 this.checkPlantGrowth(tileX, tileY);
                 tileData.sunLevel = 0;
             }
         }
-
+    
         if (this.lastTimeIncrement > 0) {
-        this.lastTimeIncrement -= 100;
+            this.lastTimeIncrement -= 100;
         }
-
+    
         this.updateGameState();
+    
+        // Handle touch-based planting and reaping (if touch zones are being pressed)
+        if (this.cursors.plant.isDown || this.cursors.plant.isDown === true) {
+            this.handlePlanting();
+        }
+    
+        if (this.cursors.reap.isDown || this.cursors.reap.isDown === true) {
+            this.handleReaping();
+        }
     }
+    
 
     updateGameState() 
     {
