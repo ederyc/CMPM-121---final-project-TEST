@@ -135,7 +135,8 @@ class Play extends Phaser.Scene
             left: this.add.zone(this.cameras.main.worldView.centerX - 80, this.cameras.main.worldView.centerY, 100, 100).setOrigin(0.5).setScrollFactor(0),
             right: this.add.zone(this.cameras.main.worldView.centerX + 80, this.cameras.main.worldView.centerY, 100, 100).setOrigin(0.5).setScrollFactor(0),
             plant: this.add.zone(this.cameras.main.worldView.centerX - 300, this.cameras.main.worldView.centerY + 200, 100, 100).setOrigin(0.5).setScrollFactor(0),
-            reap: this.add.zone(this.cameras.main.worldView.centerX + 300, this.cameras.main.worldView.centerY + 200, 100, 100).setOrigin(0.5).setScrollFactor(0)
+            reap: this.add.zone(this.cameras.main.worldView.centerX + 300, this.cameras.main.worldView.centerY + 200, 100, 100).setOrigin(0.5).setScrollFactor(0),
+            incrementTime: this.add.zone(this.cameras.main.worldView.centerX, this.cameras.main.worldView.centerY + 200, 100, 100).setOrigin(0.5).setScrollFactor(0)
         };
     
         // Make touch zones interactive and link to cursors
@@ -156,8 +157,9 @@ class Play extends Phaser.Scene
     this.add.rectangle(this.cameras.main.worldView.centerX, this.cameras.main.worldView.centerY + 80, 100, 100, 0xff0000, 0.3).setOrigin(0.5).setScrollFactor(0); // Down
     this.add.rectangle(this.cameras.main.worldView.centerX - 80, this.cameras.main.worldView.centerY, 100, 100, 0x0000ff, 0.3).setOrigin(0.5).setScrollFactor(0); // Left
     this.add.rectangle(this.cameras.main.worldView.centerX + 80, this.cameras.main.worldView.centerY, 100, 100, 0xffff00, 0.3).setOrigin(0.5).setScrollFactor(0); // Right
-    this.add.rectangle(this.cameras.main.worldView.centerX - 300, this.cameras.main.worldView.centerY + 200, 100, 100, 0x00ffff, 0.5).setOrigin(0.5).setScrollFactor(0); // Plant
-    this.add.rectangle(this.cameras.main.worldView.centerX + 300, this.cameras.main.worldView.centerY + 200, 100, 100, 0xff00ff, 0.5).setOrigin(0.5).setScrollFactor(0); // Reap
+    this.add.rectangle(this.cameras.main.worldView.centerX - 300, this.cameras.main.worldView.centerY + 200, 100, 100, 0x00ffff, 0.3).setOrigin(0.5).setScrollFactor(0); // Plant
+    this.add.rectangle(this.cameras.main.worldView.centerX + 300, this.cameras.main.worldView.centerY + 200, 100, 100, 0xff00ff, 0.3).setOrigin(0.5).setScrollFactor(0); // Reap
+    this.add.rectangle(this.cameras.main.worldView.centerX, this.cameras.main.worldView.centerY + 200, 100, 100, 0x000000, 0.3).setOrigin(0.5).setScrollFactor(0); // incrementTime
     }
     
     
