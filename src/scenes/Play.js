@@ -61,7 +61,7 @@ class Play extends Phaser.Scene
         this.translations = this.cache.json.get('translations');
         this.selectedLanguage = 'en'; // Default language
     
-        //Movement directions and plant/reap
+        // Movement directions and plant/reap
         this.cursors = this.input.keyboard.addKeys({
             'up': Phaser.Input.Keyboard.KeyCodes.W,
             'down': Phaser.Input.Keyboard.KeyCodes.S,
@@ -99,7 +99,7 @@ class Play extends Phaser.Scene
             collisionLayer2.setCollisionByExclusion([-1]);
         }
     
-        // Add player to scene and allow player collision and camera movement
+        // Add player to scene and allow player collision and player camera movement
         this.player = this.physics.add.sprite(1200, 1600, 'player', 0);
         this.player.body.setCollideWorldBounds(true);
         this.player.setScale(1);
@@ -120,7 +120,6 @@ class Play extends Phaser.Scene
     
         // Load the game state upon refresh 
         const savedState = localStorage.getItem('gameState');
-    
         if (savedState) {
             const savedData = new Uint8Array(JSON.parse(savedState));
             this.loadGameState(savedData);
@@ -129,20 +128,17 @@ class Play extends Phaser.Scene
         // Add key bindings for language selection
         this.createKeyBindings();
     
-        // Set up touch zones for mobile controls (virtual buttons)
-        const width = this.sys.game.config.width;
-        const height = this.sys.game.config.height;
-    
+        // Add touch zones as UI elements (relative to the camera view)
         const touchZones = {
-            up: this.add.zone(width / 2, height / 4, width, height / 4).setOrigin(0.5),
-            down: this.add.zone(width / 2, (3 * height) / 4, width, height / 4).setOrigin(0.5),
-            left: this.add.zone(width / 4, height / 2, width / 4, height).setOrigin(0.5),
-            right: this.add.zone((3 * width) / 4, height / 2, width / 4, height).setOrigin(0.5),
-            plant: this.add.zone(width - 100, height - 150, 100, 100).setOrigin(0.5),
-            reap: this.add.zone(width - 100, height - 50, 100, 100).setOrigin(0.5)
+            up: this.add.zone(this.cameras.main.worldView.centerX, this.cameras.main.worldView.centerY - 80, 100, 100).setOrigin(0.5).setScrollFactor(0),
+            down: this.add.zone(this.cameras.main.worldView.centerX, this.cameras.main.worldView.centerY + 80, 100, 100).setOrigin(0.5).setScrollFactor(0),
+            left: this.add.zone(this.cameras.main.worldView.centerX - 80, this.cameras.main.worldView.centerY, 100, 100).setOrigin(0.5).setScrollFactor(0),
+            right: this.add.zone(this.cameras.main.worldView.centerX + 80, this.cameras.main.worldView.centerY, 100, 100).setOrigin(0.5).setScrollFactor(0),
+            plant: this.add.zone(this.cameras.main.worldView.centerX + 300, this.cameras.main.worldView.centerY + 200, 100, 100).setOrigin(0.5).setScrollFactor(0),
+            reap: this.add.zone(this.cameras.main.worldView.centerX + 300, this.cameras.main.worldView.centerY + 400, 100, 100).setOrigin(0.5).setScrollFactor(0)
         };
     
-        // Set zone interactivity and event listeners
+        // Make touch zones interactive and link to cursors
         for (const key in touchZones) {
             touchZones[key].setInteractive();
     
@@ -155,14 +151,15 @@ class Play extends Phaser.Scene
             });
         }
     
-        // Optional: Add visuals for touch zones (for debugging or player guidance)
-        this.add.rectangle(width / 2, height / 4, width, height / 4, 0x00ff00, 0.3); // Up
-        this.add.rectangle(width / 2, (3 * height) / 4, width, height / 4, 0xff0000, 0.3); // Down
-        this.add.rectangle(width / 4, height / 2, width / 4, height, 0x0000ff, 0.3); // Left
-        this.add.rectangle((3 * width) / 4, height / 2, width / 4, height, 0xffff00, 0.3); // Right
-        this.add.rectangle(width - 100, height - 150, 100, 100, 0x00ffff, 0.5).setOrigin(0.5); // Plant
-        this.add.rectangle(width - 100, height - 50, 100, 100, 0xff00ff, 0.5).setOrigin(0.5); // Reap
+         // Optional: Add visuals for touch zones (for debugging or player guidance)
+    this.add.rectangle(this.cameras.main.worldView.centerX, this.cameras.main.worldView.centerY - 80, 100, 100, 0x00ff00, 0.3).setOrigin(0.5).setScrollFactor(0); // Up
+    this.add.rectangle(this.cameras.main.worldView.centerX, this.cameras.main.worldView.centerY + 80, 100, 100, 0xff0000, 0.3).setOrigin(0.5).setScrollFactor(0); // Down
+    this.add.rectangle(this.cameras.main.worldView.centerX - 80, this.cameras.main.worldView.centerY, 100, 100, 0x0000ff, 0.3).setOrigin(0.5).setScrollFactor(0); // Left
+    this.add.rectangle(this.cameras.main.worldView.centerX + 80, this.cameras.main.worldView.centerY, 100, 100, 0xffff00, 0.3).setOrigin(0.5).setScrollFactor(0); // Right
+    this.add.rectangle(width - 100, height - 150, 100, 100, 0x00ffff, 0.5).setOrigin(0.5); // Plant
+    this.add.rectangle(width - 100, height - 50, 100, 100, 0xff00ff, 0.5).setOrigin(0.5); // Reap
     }
+    
     
 
     update() {
