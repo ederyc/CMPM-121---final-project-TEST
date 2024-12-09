@@ -1,0 +1,18 @@
+{
+    "en": {
+        "time": "Time: {minutes}:{seconds}",
+        "winMessage": "Phase 1 complete: Grew 5 level 4 plants"
+    },
+    "zh": {
+        "time": "时间: {minutes}:{seconds}",
+        "winMessage": "第一阶段完成: 种植了5个4级植物"
+    },
+    "ar": {
+        "time": "الوقت: {minutes}:{seconds}",
+        "winMessage": "تم إكمال المرحلة 1: نمو 5 نباتات من المستوى 4"
+    },
+    "es": {
+        "time": "Tiempo: {minnutes}:{seconds}",
+        "winMessage": "Fase 1 completa: 5 plantas de nivel 4 cosechadas"
+    }
+}
