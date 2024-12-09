@@ -133,22 +133,39 @@ class Play extends Phaser.Scene
         this.createKeyBindings();
 
 
-        //MOBILE CONTROLS / SETUPS
-        this.add.text(10, 10, 'Swipe or tap to move', { fontSize: '16px', fill: '#ffffff' });
+          // Add touch zones
+    const touchZones = {
+        up: this.add.zone(width / 2, height / 4, width, height / 4).setOrigin(0.5),
+        down: this.add.zone(width / 2, (3 * height) / 4, width, height / 4).setOrigin(0.5),
+        left: this.add.zone(width / 4, height / 2, width / 4, height).setOrigin(0.5),
+        right: this.add.zone((3 * width) / 4, height / 2, width / 4, height).setOrigin(0.5),
+        plant: this.add.zone(width - 100, height - 150, 100, 100).setOrigin(0.5),
+        reap: this.add.zone(width - 100, height - 50, 100, 100).setOrigin(0.5)
+    };
 
-        // Touch controls for movement
-        this.input.on('pointerdown', (pointer) => {
-            const x = pointer.x;
-            const y = pointer.y;
-    
-            if (x < this.cameras.main.centerX) {
-                // Move left
-                this.movePlayerLeft();
-            } else if (x > this.cameras.main.centerX) {
-                // Move right
-                this.movePlayerRight();
-            }
+    // Set zone interactivity and event listeners
+    for (const key in touchZones) {
+        touchZones[key].setInteractive();
+
+        touchZones[key].on('pointerdown', () => {
+            this.cursors[key].isDown = true;
         });
+
+        touchZones[key].on('pointerup', () => {
+            this.cursors[key].isDown = false;
+        });
+    }
+
+    // Optional: Add visuals for touch zones (for debugging or player guidance)
+    this.add.rectangle(width / 2, height / 4, width, height / 4, 0x00ff00, 0.3); // Up
+    this.add.rectangle(width / 2, (3 * height) / 4, width, height / 4, 0xff0000, 0.3); // Down
+    this.add.rectangle(width / 4, height / 2, width / 4, height, 0x0000ff, 0.3); // Left
+    this.add.rectangle((3 * width) / 4, height / 2, width / 4, height, 0xffff00, 0.3); // Right
+    this.add.rectangle(width - 100, height - 150, 100, 100, 0x00ffff, 0.5).setOrigin(0.5); // Plant
+    this.add.rectangle(width - 100, height - 50, 100, 100, 0xff00ff, 0.5).setOrigin(0.5); // Reap
+}
+
+        
         
     }
 
